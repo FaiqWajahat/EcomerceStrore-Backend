@@ -80,7 +80,6 @@ const order = async (req, res) => {
       return res.status(400).json({ message: "Missing or invalid order details", success: false });
     }
 
-    const fullName = `${shippingAddress.firstName} ${shippingAddress.lastName}`;
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -88,15 +87,6 @@ const order = async (req, res) => {
       customer_email: email,
       shipping_address_collection: {
         allowed_countries: ["US", "CA", "GB", "PK"], 
-      },
-      billing_address_collection: "required",
-      metadata: {
-        name: fullName,
-        phone: shippingAddress.phone,
-        city: shippingAddress.city,
-        country: shippingAddress.country,
-        line1: shippingAddress.address,
-        postal_code: shippingAddress.postal_code,
       },
       line_items,
       success_url: "https://ecommerce-store-frontend-pearl.vercel.app/paymentSuccess",  
@@ -120,7 +110,6 @@ console.log("Order saved successfully", newOrder);
       success: true, 
       order: newOrder,
       sessionId: session.id ,// Return session ID for frontend redirection
-
       checkoutUrl: session.url  // Send Stripe URL to frontend
     });
 
