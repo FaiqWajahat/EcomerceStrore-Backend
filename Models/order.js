@@ -28,6 +28,14 @@ const OrderSchema = new mongoose.Schema({
     postalCode:Number,
     phone:{type:Number,required:true}
   },
+  totalPrice:{
+    type:String,
+    
+  },
+  status:{
+    type:String,
+    default:"processing"
+  }
 });
 
 const Order = mongoose.model("Order", OrderSchema);

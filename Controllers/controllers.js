@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email,password,role } = req.body;
     const user = await userSchema.findOne({ email });
     if (user) {
       return res.status(400).json({
@@ -29,12 +29,13 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role
     });
 
     const savedUser = await newUser.save();
-    res.status(200).json({ message: "User Saved Successfully", success: true });
+    res.status(200).json({ message: "User added successfully ", success: true });
   } catch (err) {
-    res.status(400).json({ message: "Error in Saving User", success: false });
+    res.status(400).json({ message: "Error in adding User", success: false });
   }
 };
 
@@ -55,7 +56,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { email: user.email ,name:user.name,  _id: user._id },
+      { email: user.email ,name:user.name,  id: user._id, role },
       process.env.JWT_Secret
      
     );
@@ -73,7 +74,7 @@ const login = async (req, res) => {
 
 const order = async (req, res) => {
   try {
-    const { email, line_items, shippingAddress ,checkoutItems} = req.body;
+    const { email, line_items, shippingAddress ,checkoutItems, totalPrice} = req.body;
 
     // Validate required fields
     if (!email || !shippingAddress || !line_items || line_items.length === 0) {
@@ -101,10 +102,12 @@ const order = async (req, res) => {
       email,
       checkoutItems,
       shippingAddress,
+      totalPrice
+      
     });
 
     await newOrder.save();
-console.log("Order saved successfully", newOrder);
+     console.log("Order saved successfully", newOrder);
     res.status(201).json({ 
       message: "Order created successfully",
       success: true, 
